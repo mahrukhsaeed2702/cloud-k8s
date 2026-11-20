@@ -1,0 +1,25 @@
+=== Run: replicas=1 rate=100 rps duration=60s ===
+httperf: warning: open file limit > FD_SETSIZE; limiting max. # of open files to FD_SETSIZE
+httperf --client=0/1 --server=emi.local --port=80 --uri=/ --rate=100 --send-buffer=4096 --recv-buffer=16384 --num-conns=6000 --num-calls=1
+Maximum connect burst length: 1
+
+Total: connections 6000 requests 6000 replies 6000 test-duration 59.992 s
+
+Connection rate: 100.0 conn/s (10.0 ms/conn, <=12 concurrent connections)
+Connection time [ms]: min 0.8 avg 3.1 max 173.6 median 1.5 stddev 10.1
+Connection time [ms]: connect 0.0
+Connection length [replies/conn]: 1.000
+
+Request rate: 100.0 req/s (10.0 ms/req)
+Request size [B]: 62.0
+
+Reply rate [replies/s]: min 99.6 avg 100.0 max 100.4 stddev 0.2 (11 samples)
+Reply time [ms]: response 3.0 transfer 0.0
+Reply size [B]: header 295.0 content 4883.0 footer 0.0 (total 5178.0)
+Reply status: 1xx=0 2xx=6000 3xx=0 4xx=0 5xx=0
+
+CPU time [s]: user 14.62 system 45.35 (user 24.4% system 75.6% total 100.0%)
+Net I/O: 511.8 KB/s (4.2*10^6 bps)
+
+Errors: total 0 client-timo 0 socket-timo 0 connrefused 0 connreset 0
+Errors: fd-unavail 0 addrunavail 0 ftab-full 0 other 0
