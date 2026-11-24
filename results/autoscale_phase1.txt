@@ -3,10 +3,7 @@ Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
 Benchmarking emi.local (be patient)
-Completed 5000 requests
-Completed 10000 requests
-Completed 15000 requests
-Finished 19045 requests
+Finished 12198 requests
 
 
 Server Software:        
@@ -16,36 +13,36 @@ Server Port:            80
 Document Path:          /api/emi
 Document Length:        103 bytes
 
-Concurrency Level:      10
-Time taken for tests:   180.048 seconds
-Complete requests:      19045
-Failed requests:        4
-   (Connect: 0, Receive: 0, Length: 4, Exceptions: 0)
-Non-2xx responses:      4
-Total transferred:      5922871 bytes
-Total body sent:        3429720
-HTML transferred:       1961823 bytes
-Requests per second:    105.78 [#/sec] (mean)
-Time per request:       94.538 [ms] (mean)
-Time per request:       9.454 [ms] (mean, across all concurrent requests)
-Transfer rate:          32.13 [Kbytes/sec] received
-                        18.60 kb/s sent
-                        50.73 kb/s total
+Concurrency Level:      20
+Time taken for tests:   120.004 seconds
+Complete requests:      12198
+Failed requests:        11
+   (Connect: 0, Receive: 0, Length: 11, Exceptions: 0)
+Non-2xx responses:      11
+Total transferred:      3793237 bytes
+Total body sent:        2199060
+HTML transferred:       1256911 bytes
+Requests per second:    101.65 [#/sec] (mean)
+Time per request:       196.759 [ms] (mean)
+Time per request:       9.838 [ms] (mean, across all concurrent requests)
+Transfer rate:          30.87 [Kbytes/sec] received
+                        17.90 kb/s sent
+                        48.76 kb/s total
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0    0   0.1      0       3
-Processing:     6   94 102.2     74    1093
-Waiting:        6   94 102.2     73    1093
-Total:          6   94 102.1     74    1093
+Connect:        0    0   0.1      0       2
+Processing:     5  196 274.2     80    2808
+Waiting:        5  196 274.2     80    2808
+Total:          5  196 274.2     81    2808
 
 Percentage of the requests served within a certain time (ms)
-  50%     74
-  66%    102
-  75%    122
-  80%    178
-  90%    206
-  95%    297
-  98%    398
-  99%    477
- 100%   1093 (longest request)
+  50%     81
+  66%    202
+  75%    297
+  80%    365
+  90%    522
+  95%    698
+  98%    959
+  99%   1217
+ 100%   2808 (longest request)

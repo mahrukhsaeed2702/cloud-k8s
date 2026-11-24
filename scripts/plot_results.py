@@ -49,7 +49,7 @@ for i, r in enumerate(replica_configs):
             times.append(mean_ms)
             valid_rates.append(rate)
     if times:
-        ax.plot(valid_rates, times,  label=f'{r} replica(s)', color=colors[i])
+        ax.plot(valid_rates, times, marker='o', label=f'{r} replica(s)', color=colors[i])
 
 ax.set_title("Graph 1: Avg Response Time vs Request Rate")
 ax.set_xlabel("Request Rate (req/s)")
@@ -63,37 +63,49 @@ print("Saved graph1_response_time.png")
 
 # ── Graph 2: CPU per pod ──────────────────────────────────────────────────────
 
-csv_path = "results/profile_profile_r3_rps100.csv.csv"
-pod_data = {}
+csv_path = "results/pod_cpu.csv"
+pod_data = {}  # short_name -> list of (sample_idx, cpu_val)
 try:
     with open(csv_path) as f:
         reader = csv.DictReader(f)
+        pod_counters = {}  # track sample index per pod
         for row in reader:
             pod = row.get('pod', '').strip()
-            short = '-'.join(pod.split('-')[-2:]) if pod else pod
-            cpu_raw = row.get('cpu', '0').strip()
+            if not pod or pod == 'pod':
+                continue
+            short = '-'.join(pod.split('-')[-2:])  # last 2 parts e.g. "9c6f5"
+            cpu_raw = row.get('cpu', '0m').strip()
             try:
                 if cpu_raw.endswith('m'):
-                    # millicores → % of 250m limit
-                    cpu_val = float(cpu_raw[:-1]) / 250 * 100
+                    cpu_val = float(cpu_raw[:-1]) / 250 * 100  # millicores → %
                 else:
                     cpu_val = float(cpu_raw)
             except ValueError:
                 cpu_val = 0
-            pod_data.setdefault(short, []).append(cpu_val)
+            pod_counters[short] = pod_counters.get(short, 0)
+            pod_data.setdefault(short, []).append((pod_counters[short], cpu_val))
+            pod_counters[short] += 1
 except FileNotFoundError:
     print(f"Warning: {csv_path} not found, skipping graph 2")
     pod_data = {}
 
 if pod_data:
-    fig, ax = plt.subplots(figsize=(10, 6))
-    for pod, vals in pod_data.items():
-        ax.plot(vals, label=pod)
-    ax.set_title("Graph 2: CPU per Pod (100 req/s, 3 replicas)")
+    pod_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    for i, (pod_short, samples) in enumerate(sorted(pod_data.items())):
+        xs = [s[0] for s in samples]
+        ys = [s[1] for s in samples]
+        color = pod_colors[i % len(pod_colors)]
+        ax.plot(xs, ys, marker='o', markersize=3, linewidth=1.5,
+                color=color, label=f'pod-{pod_short}')
+
+    ax.set_title("Graph 2: CPU Utilization per Pod (100 req/s, 3 replicas)")
     ax.set_xlabel("Sample (every 15s)")
     ax.set_ylabel("CPU Utilization (%)")
-    ax.legend()
-    ax.grid(True, alpha=0.3)
+    ax.set_ylim(0)
+    ax.legend(loc='upper right', fontsize=9)
+    ax.grid(True, alpha=0.3, linestyle='--')
     plt.tight_layout()
     plt.savefig("results/graph2_cpu_per_pod.png", dpi=150)
     plt.close()
@@ -128,14 +140,14 @@ try:
                 cpu_list.append(cpu_val)
             except (ValueError, AttributeError):
                 cpu_list.append(0)
-            # assign rate based on rough phase (20% low, 50% high, 30% low)
-            frac = idx / n
-            if frac < 0.20:
-                phase_rates.append(10)
-            elif frac < 0.70:
+            # phase boundaries: 2min @20c, 5min @100c, 3min @20c = 10min total
+            # at 15s per sample: ~8 samples, ~20 samples, ~12 samples
+            if idx < 8:
+                phase_rates.append(20)
+            elif idx < 28:
                 phase_rates.append(100)
             else:
-                phase_rates.append(10)
+                phase_rates.append(20)
 
         fig, ax1 = plt.subplots(figsize=(12, 6))
         ax2 = ax1.twinx()
